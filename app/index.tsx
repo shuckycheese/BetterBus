@@ -13,12 +13,12 @@ type RootStackParamList = {
 // Use the type for the navigation prop
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'index'>;
 
-const HomePage: React.FC = () => {
+export default function HomePage() {
   const navigation = useNavigation<HomeScreenNavigationProp>();
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome to the Bus App</Text>
+      <Text style={styles.title}>Welcome to BetterBus</Text>
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={{ ...styles.button, ...styles.cameraButton }}>
           <Icon name="camera" style={styles.icon} />
@@ -78,5 +78,3 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
 });
-
-export default HomePage;

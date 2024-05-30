@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TextInput } from 'react-native';
 
-const BusStopsScreen: React.FC = () => {
+export default function BusStopsScreen() {
   return (
     <View style={styles.container}>
       <TextInput
@@ -31,5 +31,3 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
 });
-
-export default BusStopsScreen;

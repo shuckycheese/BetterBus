@@ -1,7 +1,7 @@
 import React from 'react';
 import { Stack } from 'expo-router';
 
-const Layout: React.FC = () => {
+export default function Layout() {
   return (
     <Stack>
       <Stack.Screen name="index" options={{ title: "Home" }} />
@@ -9,7 +9,3 @@ const Layout: React.FC = () => {
     </Stack>
   );
 };
-
-export default Layout;
-
-
