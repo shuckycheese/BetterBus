@@ -1,8 +1,21 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
+// Define the type for your navigation stack
+type RootStackParamList = {
+  index: undefined;
+  BusStops: undefined;
+};
+
+// Use the type for the navigation prop
+type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'index'>;
 
 const HomePage: React.FC = () => {
+  const navigation = useNavigation<HomeScreenNavigationProp>();
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Welcome to the Bus App</Text>
@@ -11,9 +24,12 @@ const HomePage: React.FC = () => {
           <Icon name="camera" style={styles.icon} />
           <Text style={styles.buttonText}>Camera</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={{ ...styles.button, ...styles.busStopButton }}>
+        <TouchableOpacity
+          style={{ ...styles.button, ...styles.busStopButton }}
+          onPress={() => navigation.navigate('BusStops')}
+        >
           <Icon name="bus" style={styles.icon} />
-          <Text style={styles.buttonText}>Bus Stop</Text>
+          <Text style={styles.buttonText}>Bus Stops</Text>
         </TouchableOpacity>
       </View>
     </View>
