@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -18,6 +18,7 @@ export default function HomePage() {
 
   return (
     <View style={styles.container}>
+      <Image source={require('../assets/images/app-logo.png')} style={styles.logo} />
       <Text style={styles.title}>Welcome to BetterBus</Text>
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={{ ...styles.button, ...styles.cameraButton }}>
@@ -41,26 +42,35 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#E0F7FA',
+    padding: 20,
   },
-  title: {
-    fontSize: 30,
-    color: '#333',
+  logo: {
+    width: 120,
+    height: 120,
     marginBottom: 20,
   },
+  title: {
+    fontSize: 32,
+    color: '#00796B',
+    fontWeight: 'bold',
+    marginBottom: 30,
+    textAlign: 'center',
+  },
   buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '80%',
+    flexDirection: 'column',
+    alignItems: 'center',
+    width: '100%',
   },
   button: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
-    borderRadius: 8,
-    width: 150,
-    height: 60,
+    borderRadius: 10,
+    width: '80%',
+    height: 80,
+    marginBottom: 20,
   },
   cameraButton: {
     backgroundColor: '#007BFF', // Blue
@@ -70,11 +80,13 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginRight: 10,
-    fontSize: 24,
+    fontSize: 28,
     color: '#fff',
   },
   buttonText: {
-    fontSize: 18,
+    fontSize: 22,
     color: '#fff',
+    fontWeight: 'bold',
   },
 });
+
