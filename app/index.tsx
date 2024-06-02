@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, ImageBackground } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -17,37 +17,47 @@ export default function HomePage() {
   const navigation = useNavigation<HomeScreenNavigationProp>();
 
   return (
-    <View style={styles.container}>
-      <Image source={require('../assets/images/app-logo.png')} style={styles.logo} />
-      <Text style={styles.title}>Welcome to BetterBus</Text>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={{ ...styles.button, ...styles.cameraButton }}>
-          <Icon name="camera" style={styles.icon} />
-          <Text style={styles.buttonText}>Camera</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={{ ...styles.button, ...styles.busStopButton }}
-          onPress={() => navigation.navigate('BusStops')}
-        >
-          <Icon name="bus" style={styles.icon} />
-          <Text style={styles.buttonText}>Bus Stops</Text>
-        </TouchableOpacity>
+    <ImageBackground source={require('../assets/images/betterbus background.png')} style={styles.background}>
+      <View style={styles.container}>
+        <Image source={require('../assets/images/betterbus logo.png')} style={styles.logo} />
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={{ ...styles.button, ...styles.cameraButton }}>
+            <View style={styles.buttonContent}>
+              <Icon name="camera" style={styles.icon} />
+              <Text style={styles.buttonText}>Camera</Text>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{ ...styles.button, ...styles.busStopButton }}
+            onPress={() => navigation.navigate('BusStops')}
+          >
+            <View style={styles.buttonContent}>
+              <Icon name="bus" style={styles.icon} />
+              <Text style={styles.buttonText}>Bus Stops</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    resizeMode: 'cover', // Ensure the image covers the whole screen
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#E0F7FA',
     padding: 20,
   },
   logo: {
-    width: 120,
-    height: 120,
+    width: 200,
+    height: 200,
     marginBottom: 20,
   },
   title: {
@@ -58,7 +68,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   buttonContainer: {
-    flexDirection: 'column',
     alignItems: 'center',
     width: '100%',
   },
@@ -78,6 +87,12 @@ const styles = StyleSheet.create({
   busStopButton: {
     backgroundColor: '#FF7F00', // Orange
   },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+  },
   icon: {
     marginRight: 10,
     fontSize: 28,
@@ -89,4 +104,3 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-
