@@ -8,6 +8,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 type RootStackParamList = {
   index: undefined;
   BusStops: undefined;
+  CameraScreen: undefined;
 };
 
 // Use the type for the navigation prop
@@ -21,7 +22,7 @@ export default function HomePage() {
       <View style={styles.container}>
         <Image source={require('../assets/images/betterbus logo.png')} style={styles.logo} />
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={{ ...styles.button, ...styles.cameraButton }}>
+          <TouchableOpacity style={{ ...styles.button, ...styles.cameraButton }} onPress={() => navigation.navigate('CameraScreen')}>
             <View style={styles.buttonContent}>
               <Icon name="camera" style={styles.icon} />
               <Text style={styles.buttonText}>Camera</Text>
