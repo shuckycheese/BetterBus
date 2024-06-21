@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, ImageBackground, FlatList } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as Location from 'expo-location';
 import * as Speech from 'expo-speech';
@@ -7,12 +7,13 @@ import * as Speech from 'expo-speech';
 export default function BusStopsScreen() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [generalData, setGeneralData] = useState<any>(null);
-  const [data, setData] = useState<string[]>([]);
-  const [data1, setData1] = useState<string[]>([]);
+  const [busData, setBusData] = useState<string[]>([]);
+  const [timings, setTimings] = useState<string[]>([]);
   const [busStopData, setBusStopData] = useState<any[]>([]);
+  const [filteredBusStops, setFilteredBusStops] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [closestBusStop, setClosestBusStop] = useState<string | null>(null);
+  const [searchedBusStop, setSearchedBusStop] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -21,12 +22,33 @@ export default function BusStopsScreen() {
         setError('Permission to access location was denied');
         return;
       }
+
+      const authString = 'NUSnextbus:13dL?zY,3feWR^"T';
+      const headers = new Headers();
+      headers.set('Authorization', 'Basic ' + btoa(authString));
+
+      const response = await fetch(`https://nnextbus.nus.edu.sg/BusStops`, { method: 'GET', headers: headers });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const jsonData = await response.json();
+      const busStopsData: any[] = jsonData.BusStopsResult.busstops;
+      setBusStopData(busStopsData);
     })();
   }, []);
 
-  const fetchData = async (query : string) => {
+  useEffect(() => {
+    return () => {
+      Speech.stop();
+    };
+  }, []);
+
+  const fetchData = async (query: string, longName: string | null = null) => {
     setIsLoading(true);
     setError(null);
+    setSearchedBusStop(longName);
 
     try {
       const authString = 'NUSnextbus:13dL?zY,3feWR^"T';
@@ -43,13 +65,12 @@ export default function BusStopsScreen() {
       const shuttleServices: any[] = jsonData.ShuttleServiceResult.shuttles;
       setGeneralData(shuttleServices);
       const uniqueShuttleNames = Array.from(new Set(shuttleServices.map((shuttle: any) => shuttle.name))) as string[];
-      setData(uniqueShuttleNames);
+      setBusData(uniqueShuttleNames);
       const shuttleTimings = shuttleServices.map((shuttle) => {
         return shuttle.arrivalTime === "-" ? "-" : shuttle.arrivalTime === "Arr" ? "Arr" : shuttle.arrivalTime + " min";
       });
-      setData1(shuttleTimings);
+      setTimings(shuttleTimings);
 
-      // Read out the results
       const resultsText = uniqueShuttleNames.map((name, index) => `${name} arriving in ${shuttleTimings[index]}`).join(', ');
       Speech.speak(resultsText);
 
@@ -63,6 +84,7 @@ export default function BusStopsScreen() {
   };
 
   const handleNearestPress = async () => {
+    Speech.stop();
     setIsLoading(true);
     setError(null);
 
@@ -90,13 +112,11 @@ export default function BusStopsScreen() {
 
       const location = await Location.getCurrentPositionAsync({});
       const closest = findClosestBusStop(location.coords.latitude, location.coords.longitude, busStopsData);
-      setClosestBusStop(closest.name);
-      if (closestBusStop != null) {
-        fetchData(closestBusStop);
-      }
+      setSearchedBusStop(closest.LongName);
 
-      // Read out the nearest bus stop
-      Speech.speak(`The nearest bus stop is ${closest.name}`);
+      Speech.speak(`The nearest bus stop is ${closest.LongName}`);
+      
+      await fetchData(closest.name, closest.LongName);
 
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -105,6 +125,17 @@ export default function BusStopsScreen() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleSearchPress = async () => {
+    Speech.stop();
+
+    const busStop = busStopData.find(stop => stop.name.toLowerCase() === searchQuery.toLowerCase());
+
+    const longName = busStop ? busStop.LongName : searchQuery;
+
+    Speech.speak(`Searching for bus stop ${longName}`);
+    await fetchData(searchQuery, longName);
   };
 
   const findClosestBusStop = (latitude: number, longitude: number, busStops: any[]) => {
@@ -135,6 +166,22 @@ export default function BusStopsScreen() {
     return closest;
   };
 
+  const filterBusStops = (query: string) => {
+    if (!query) {
+      setFilteredBusStops([]);
+      return;
+    }
+    const filtered = busStopData.filter(stop => stop.LongName.toLowerCase().includes(query.toLowerCase()));
+    setFilteredBusStops(filtered);
+  };
+
+  const handleSuggestionPress = async (busStop: any) => {
+    setSearchQuery(busStop.LongName);
+    setFilteredBusStops([]);
+    Speech.speak(`Searching for bus stop ${busStop.LongName}`);
+    await fetchData(busStop.name, busStop.LongName);
+  };
+
   return (
     <ImageBackground source={require('../assets/images/busStops background.png')} style={styles.background}>
       <View style={styles.container}>
@@ -143,12 +190,27 @@ export default function BusStopsScreen() {
             style={styles.searchBar}
             placeholder="Search for bus stops"
             value={searchQuery}
-            onChangeText={setSearchQuery}
+            onChangeText={(text) => {
+              setSearchQuery(text);
+              filterBusStops(text);
+            }}
           />
-          <TouchableOpacity style={styles.searchButton} onPress={() => fetchData(searchQuery)}>
+          <TouchableOpacity style={styles.searchButton} onPress={handleSearchPress}>
             <Icon name="search" size={20} color="#fff" />
           </TouchableOpacity>
         </View>
+        {filteredBusStops.length > 0 && (
+          <FlatList
+            data={filteredBusStops}
+            keyExtractor={(item) => item.name}
+            renderItem={({ item }) => (
+              <TouchableOpacity onPress={() => handleSuggestionPress(item)}>
+                <Text style={styles.suggestionText}>{item.LongName}</Text>
+              </TouchableOpacity>
+            )}
+            style={styles.suggestionsContainer}
+          />
+        )}
         <TouchableOpacity style={styles.nearestButton} onPress={handleNearestPress}>
           <Icon name="map-marker" size={20} color="#fff" />
           <Text style={styles.nearestButtonText}>Nearest</Text>
@@ -157,13 +219,24 @@ export default function BusStopsScreen() {
           <ActivityIndicator size="large" color="#0000ff" />
         ) : (
           <View style={styles.resultsWrapper}>
+            <View>
+            {error ? (
+                  <Text style={styles.errorText}>{error}</Text>
+                ) : (
+                  searchedBusStop != null ? (
+                    <Text style={styles.busStopResult}>{searchedBusStop}</Text>
+                  ) : (
+                    <Text style={styles.resultText1}>No bus stop searched</Text>
+                  )
+                )}
+            </View>
             <View style={styles.resultContainers}>
               <View style={styles.resultContainer}>
                 {error ? (
                   <Text style={styles.errorText}>{error}</Text>
                 ) : (
-                  data.length > 0 ? (
-                    data.map((name, index) => (
+                  busData.length > 0 ? (
+                    busData.map((name, index) => (
                       <Text key={index} style={styles.resultText}>{name}</Text>
                     ))
                   ) : (
@@ -175,8 +248,8 @@ export default function BusStopsScreen() {
                 {error ? (
                   <Text style={styles.errorText}>{error}</Text>
                 ) : (
-                  data.length > 0 ? (
-                    data1.map((arrivalTiming, index) => (
+                  busData.length > 0 ? (
+                    timings.map((arrivalTiming, index) => (
                       <Text key={index} style={styles.resultText1}>{arrivalTiming}</Text>
                     ))
                   ) : (
@@ -197,7 +270,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    resizeMode: 'cover', // Ensure the image covers the whole screen
+    resizeMode: 'cover', 
   },
   container: {
     flex: 1,
@@ -208,7 +281,7 @@ const styles = StyleSheet.create({
     width: '100%',
     marginBottom: 20,
     paddingHorizontal: 10,
-    paddingTop: 40, // to position below the status bar
+    paddingTop: 40, 
   },
   searchBar: {
     flex: 1,
@@ -261,8 +334,18 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)', // semi-transparent white background
+    backgroundColor: 'rgba(255, 255, 255, 0.8)', 
     padding: 10,
+  },
+  busStopResult: {
+    fontSize: 20,
+    color: '#333',
+    textAlign: 'center',
+    marginVertical: 2,
+    backgroundColor: '#B3E5FC',
+    padding: 10,
+    borderRadius: 10,
+    overflow: 'hidden',
   },
   resultContainers: {
     flexDirection: 'row',
@@ -312,5 +395,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'red',
     textAlign: 'center',
+  },
+  suggestionsContainer: {
+    maxHeight: 200,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    elevation: 5,
+  },
+  suggestionText: {
+    padding: 10,
+    fontSize: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
   },
 });
