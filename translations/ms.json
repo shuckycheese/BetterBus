@@ -1,0 +1,20 @@
+{
+  "camera": "Kamera",
+  "bus_stops": "Hentian Bas",
+  "language": "Bahasa",
+  "select_language": "Pilih Bahasa",
+  "english": "Bahasa Inggeris",
+  "chinese": "Bahasa Cina",
+  "malay": "Bahasa Melayu",
+  "close": "Tutup",
+  "search_placeholder": "Cari perhentian bas",
+  "nearest_button": "Terdekat",
+  "no_bus_stop_searched": "Tiada perhentian bas dicari",
+  "no_shuttles_found": "Tiada bas ditemui",
+  "no_timings_found": "Tiada jadual ditemui",
+  "permission_denied": "Kebenaran untuk mengakses lokasi telah ditolak",
+  "error_fetching_data": "Ralat semasa memuatkan data",
+  "nearest_bus_stop_is": "Perhentian bas terdekat adalah",
+  "searching_for_bus_stop": "Mencari perhentian bas",
+  "arriving_in": "tiba dalam"
+}

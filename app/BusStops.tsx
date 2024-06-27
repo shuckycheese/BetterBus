@@ -3,8 +3,10 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator,
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as Location from 'expo-location';
 import * as Speech from 'expo-speech';
+import { useTranslation } from 'react-i18next';
 
 export default function BusStopsScreen() {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [generalData, setGeneralData] = useState<any>(null);
   const [busData, setBusData] = useState<string[]>([]);
@@ -19,7 +21,7 @@ export default function BusStopsScreen() {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        setError('Permission to access location was denied');
+        setError(t('permission_denied'));
         return;
       }
 
@@ -71,13 +73,13 @@ export default function BusStopsScreen() {
       });
       setTimings(shuttleTimings);
 
-      const resultsText = uniqueShuttleNames.map((name, index) => `${name} arriving in ${shuttleTimings[index]}`).join(', ');
+      const resultsText = uniqueShuttleNames.map((name, index) => `${name} ${t('arriving_in')} ${shuttleTimings[index]}`).join(', ');
       Speech.speak(resultsText);
 
     } catch (error) {
       console.error('Error fetching data:', error);
-      setError('Error fetching data');
-      Speech.speak('Error fetching data');
+      setError(t('error_fetching_data'));
+      Speech.speak(t('error_fetching_data'));
     } finally {
       setIsLoading(false);
     }
@@ -105,7 +107,7 @@ export default function BusStopsScreen() {
 
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        setError('Permission to access location was denied');
+        setError(t('permission_denied'));
         setIsLoading(false);
         return;
       }
@@ -114,14 +116,14 @@ export default function BusStopsScreen() {
       const closest = findClosestBusStop(location.coords.latitude, location.coords.longitude, busStopsData);
       setSearchedBusStop(closest.LongName);
 
-      Speech.speak(`The nearest bus stop is ${closest.LongName}`);
+      Speech.speak(`${t('nearest_bus_stop_is')} ${closest.LongName}`);
       
       await fetchData(closest.name, closest.LongName);
 
     } catch (error) {
       console.error('Error fetching data:', error);
-      setError('Error fetching data');
-      Speech.speak('Error fetching data');
+      setError(t('error_fetching_data'));
+      Speech.speak(t('error_fetching_data'));
     } finally {
       setIsLoading(false);
     }
@@ -134,7 +136,7 @@ export default function BusStopsScreen() {
 
     const longName = busStop ? busStop.LongName : searchQuery;
 
-    Speech.speak(`Searching for bus stop ${longName}`);
+    Speech.speak(`${t('searching_for_bus_stop')} ${longName}`);
     await fetchData(searchQuery, longName);
   };
 
@@ -178,7 +180,7 @@ export default function BusStopsScreen() {
   const handleSuggestionPress = async (busStop: any) => {
     setSearchQuery(busStop.LongName);
     setFilteredBusStops([]);
-    Speech.speak(`Searching for bus stop ${busStop.LongName}`);
+    Speech.speak(`${t('searching_for_bus_stop')} ${busStop.LongName}`);
     await fetchData(busStop.name, busStop.LongName);
   };
 
@@ -188,7 +190,7 @@ export default function BusStopsScreen() {
         <View style={styles.searchContainer}>
           <TextInput
             style={styles.searchBar}
-            placeholder="Search for bus stops"
+            placeholder={t('search_placeholder')}
             value={searchQuery}
             onChangeText={(text) => {
               setSearchQuery(text);
@@ -213,22 +215,22 @@ export default function BusStopsScreen() {
         )}
         <TouchableOpacity style={styles.nearestButton} onPress={handleNearestPress}>
           <Icon name="map-marker" size={20} color="#fff" />
-          <Text style={styles.nearestButtonText}>Nearest</Text>
+          <Text style={styles.nearestButtonText}>{t('nearest_button')}</Text>
         </TouchableOpacity>
         {isLoading ? (
           <ActivityIndicator size="large" color="#0000ff" />
         ) : (
           <View style={styles.resultsWrapper}>
             <View>
-            {error ? (
-                  <Text style={styles.errorText}>{error}</Text>
+              {error ? (
+                <Text style={styles.errorText}>{error}</Text>
+              ) : (
+                searchedBusStop != null ? (
+                  <Text style={styles.busStopResult}>{searchedBusStop}</Text>
                 ) : (
-                  searchedBusStop != null ? (
-                    <Text style={styles.busStopResult}>{searchedBusStop}</Text>
-                  ) : (
-                    <Text style={styles.resultText1}>No bus stop searched</Text>
-                  )
-                )}
+                  <Text style={styles.resultText1}>{t('no_bus_stop_searched')}</Text>
+                )
+              )}
             </View>
             <View style={styles.resultContainers}>
               <View style={styles.resultContainer}>
@@ -240,7 +242,7 @@ export default function BusStopsScreen() {
                       <Text key={index} style={styles.resultText}>{name}</Text>
                     ))
                   ) : (
-                    <Text style={styles.resultText1}>No shuttles found</Text>
+                    <Text style={styles.resultText1}>{t('no_shuttles_found')}</Text>
                   )
                 )}
               </View>
@@ -253,7 +255,7 @@ export default function BusStopsScreen() {
                       <Text key={index} style={styles.resultText1}>{arrivalTiming}</Text>
                     ))
                   ) : (
-                    <Text style={styles.resultText1}>No timings found</Text>
+                    <Text style={styles.resultText1}>{t('no_timings_found')}</Text>
                   )
                 )}
               </View>
