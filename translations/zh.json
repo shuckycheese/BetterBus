@@ -1,0 +1,20 @@
+{
+  "camera": "相机",
+  "bus_stops": "公交车站",
+  "language": "语言",
+  "select_language": "选择语言",
+  "english": "英语",
+  "chinese": "中文",
+  "malay": "马来语",
+  "close": "关闭",
+  "search_placeholder": "搜索公交车站",
+  "nearest_button": "最近的",
+  "no_bus_stop_searched": "未搜索到公交车站",
+  "no_shuttles_found": "未找到穿梭巴士",
+  "no_timings_found": "未找到时间",
+  "permission_denied": "访问位置的权限被拒绝",
+  "error_fetching_data": "获取数据出错",
+  "nearest_bus_stop_is": "最近的公交车站是",
+  "searching_for_bus_stop": "搜索公交车站",
+  "arriving_in": "将在"
+}

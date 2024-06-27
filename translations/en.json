@@ -1,0 +1,21 @@
+{
+    "camera": "Camera",
+    "bus_stops": "Bus Stops",
+    "language": "Language",
+    "select_language": "Select Language",
+    "english": "English",
+    "chinese": "Chinese",
+    "malay": "Malay",
+    "close": "Close",
+    "search_placeholder": "Search for bus stops",
+    "nearest_button": "Nearest",
+    "no_bus_stop_searched": "No bus stop searched",
+    "no_shuttles_found": "No shuttles found",
+    "no_timings_found": "No timings found",
+    "permission_denied": "Permission to access location was denied",
+    "error_fetching_data": "Error fetching data",
+    "nearest_bus_stop_is": "The nearest bus stop is",
+    "searching_for_bus_stop": "Searching for bus stop",
+    "arriving_in": "arriving in"
+  }
+  
