@@ -1,0 +1,13 @@
+betterbus-ml/*.jpg filter=lfs diff=lfs merge=lfs -text
+betterbus-ml/test/images/* filter=lfs diff=lfs merge=lfs -text
+betterbus-ml/best-cropped.pt filter=lfs diff=lfs merge=lfs -text
+betterbus-ml/best.pt filter=lfs diff=lfs merge=lfs -text
+betterbus-ml/best_yolov8.onnx filter=lfs diff=lfs merge=lfs -text
+betterbus-ml/yolov8.pt filter=lfs diff=lfs merge=lfs -text
+betterbus-ml/train/images/* filter=lfs diff=lfs merge=lfs -text
+betterbus-ml/train/labels/* filter=lfs diff=lfs merge=lfs -text
+betterbus-ml/valid/images/* filter=lfs diff=lfs merge=lfs -text
+betterbus-ml/valid-cropped/images/* filter=lfs diff=lfs merge=lfs -text
+betterbus-ml/train-cropped/images/* filter=lfs diff=lfs merge=lfs -text
+betterbus-ml/val/predict/* filter=lfs diff=lfs merge=lfs -text
+betterbus-ml/yolov8s.pt filter=lfs diff=lfs merge=lfs -text
