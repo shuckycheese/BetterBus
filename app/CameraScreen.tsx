@@ -25,7 +25,7 @@ import { RNCamera } from 'react-native-camera';
 
 const startPythonScript = async () => {
   try {
-    const response = await fetch('https://your-app-name.herokuapp.com/start');
+    const response = await fetch('https://young-savannah-54267-1ffe6bd3b0e8.herokuapp.com/start');
     const text = await response.text();
     console.log(text);
   } catch (error) {
@@ -38,7 +38,7 @@ const CameraScreen = () => {
     startPythonScript();
     return () => {
       // This cleanup function will run when the component unmounts
-      fetch('https://your-app-name.herokuapp.com/stop').then(response => response.text()).then(text => console.log(text)).catch(error => console.error('Error stopping script:', error));
+      fetch('https://young-savannah-54267-1ffe6bd3b0e8.herokuapp.com/stop').then(response => response.text()).then(text => console.log(text)).catch(error => console.error('Error stopping script:', error));
     };
   }, []);
 
