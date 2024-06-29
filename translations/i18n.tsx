@@ -1,6 +1,7 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import HttpApi from 'i18next-http-backend';
+import 'intl-pluralrules'; // Import the polyfill
 
 import enTranslations from './en.json';
 import zhTranslations from './zh.json';

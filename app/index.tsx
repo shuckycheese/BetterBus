@@ -5,15 +5,14 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import i18n from '../translations/i18n';
 import { useTranslation } from 'react-i18next';
+import 'intl-pluralrules'; 
 
-// Define the type for your navigation stack
 type RootStackParamList = {
   index: undefined;
   BusStops: undefined;
   CameraScreen: undefined;
 };
 
-// Use the type for the navigation prop
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'index'>;
 
 export default function HomePage() {
@@ -38,7 +37,10 @@ export default function HomePage() {
         </TouchableOpacity>
         <Image source={require('../assets/images/betterbus logo.png')} style={styles.logo} />
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={{ ...styles.button, ...styles.cameraButton }} onPress={() => navigation.navigate('CameraScreen')}>
+          <TouchableOpacity 
+            style={{ ...styles.button, ...styles.cameraButton }} 
+            onPress={() => navigation.navigate('CameraScreen')}
+          >
             <View style={styles.buttonContent}>
               <Icon name="camera" style={styles.icon} />
               <Text style={styles.buttonText}>{t('camera')}</Text>

@@ -1,18 +1,25 @@
-import React from 'react';
-import { View, Text } from 'react-native';
-import { RNCamera } from 'react-native-camera';
+import { View, Text, StyleSheet } from 'react-native';
+import { useEffect } from 'react';
+import { Camera, useCameraDevice, useCameraPermission } from 'react-native-vision-camera';
 
 const CameraScreen = () => {
+  const { hasPermission, requestPermission } = useCameraPermission();
+
+  const device = useCameraDevice('back');
+
+  useEffect(() => {
+    if (!hasPermission) {
+      requestPermission();
+    }
+  }, [hasPermission]);
+
+  if (!device) {
+    return <Text>Camera device not found</Text>;
+  }
+
   return (
     <View style={{ flex: 1 }}>
-      <RNCamera
-        style={{ flex: 1 }}
-        type={RNCamera.Constants.Type.back}
-        flashMode={RNCamera.Constants.FlashMode.off}
-        autoFocus={RNCamera.Constants.AutoFocus.on}
-        whiteBalance={RNCamera.Constants.WhiteBalance.auto}
-        captureAudio={false}
-      />
+      <Camera style={StyleSheet.absoluteFill} device={device} isActive={true} />
     </View>
   );
 };
