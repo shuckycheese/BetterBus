@@ -73,7 +73,16 @@ export default function BusStopsScreen() {
       });
       setTimings(shuttleTimings);
 
-      const resultsText = uniqueShuttleNames.map((name, index) => `${name} ${t('arriving_in')} ${shuttleTimings[index]}`).join(', ');
+      const resultsText = uniqueShuttleNames.map((name, index) => {
+        const timing = shuttleTimings[index];
+        if (timing === "-") {
+          return `${name} ${t('currently_not_in_service')}`;
+        } else if (timing === "arr") {
+          return `${name} ${t('arriving')}`;
+        } else {
+          return `${name} ${t('arriving_in')} ${timing}`;
+        }
+      }).join(', ');
       Speech.speak(resultsText);
 
     } catch (error) {
@@ -199,6 +208,7 @@ export default function BusStopsScreen() {
           />
           <TouchableOpacity style={styles.searchButton} onPress={handleSearchPress}>
             <Icon name="search" size={20} color="#fff" />
+            <Text style={styles.nearestButtonText}>{t('Search')}</Text>
           </TouchableOpacity>
         </View>
         {filteredBusStops.length > 0 && (
@@ -221,46 +231,40 @@ export default function BusStopsScreen() {
           <ActivityIndicator size="large" color="#0000ff" />
         ) : (
           <View style={styles.resultsWrapper}>
-            <View>
-              {error ? (
-                <Text style={styles.errorText}>{error}</Text>
-              ) : (
-                searchedBusStop != null ? (
+          {error ? (
+            <Text style={styles.errorText}>Bus stop not found</Text>
+          ) : (
+            <>
+              <View>
+                {searchedBusStop != null ? (
                   <Text style={styles.busStopResult}>{searchedBusStop}</Text>
                 ) : (
                   <Text style={styles.resultText1}>{t('no_bus_stop_searched')}</Text>
-                )
-              )}
-            </View>
-            <View style={styles.resultContainers}>
-              <View style={styles.resultContainer}>
-                {error ? (
-                  <Text style={styles.errorText}>{error}</Text>
-                ) : (
-                  busData.length > 0 ? (
+                )}
+              </View>
+              <View style={styles.resultContainers}>
+                <View style={styles.resultContainer}>
+                  {busData.length > 0 ? (
                     busData.map((name, index) => (
                       <Text key={index} style={styles.resultText}>{name}</Text>
                     ))
                   ) : (
                     <Text style={styles.resultText1}>{t('no_shuttles_found')}</Text>
-                  )
-                )}
-              </View>
-              <View style={styles.resultContainer1}>
-                {error ? (
-                  <Text style={styles.errorText}>{error}</Text>
-                ) : (
-                  busData.length > 0 ? (
+                  )}
+                </View>
+                <View style={styles.resultContainer1}>
+                  {busData.length > 0 ? (
                     timings.map((arrivalTiming, index) => (
                       <Text key={index} style={styles.resultText1}>{arrivalTiming}</Text>
                     ))
                   ) : (
                     <Text style={styles.resultText1}>{t('no_timings_found')}</Text>
-                  )
-                )}
+                  )}
+                </View>
               </View>
-            </View>
-          </View>
+            </>
+          )}
+        </View>
         )}
       </View>
     </ImageBackground>
@@ -301,16 +305,18 @@ const styles = StyleSheet.create({
   },
   searchButton: {
     backgroundColor: '#007BFF',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     padding: 10,
     borderRadius: 20,
-    marginLeft: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
+    marginBottom: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 3,
     elevation: 2,
+    marginLeft: 10,
   },
   nearestButton: {
     flexDirection: 'row',
