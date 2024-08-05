@@ -15,12 +15,10 @@ const CameraScreen = () => {
   const cameraRef = useRef<CameraView>(null);
 
   if (!permission) {
-    // Camera permissions are still loading.
     return <View />;
   }
 
   if (!permission.granted) {
-    // Camera permissions are not granted yet.
     return (
       <View style={styles.container}>
         <Text style={styles.message}>We need your permission to show the camera</Text>
@@ -32,8 +30,8 @@ const CameraScreen = () => {
   const resizeImageUri = async (uri: string) => {
     const manipResult = await ImageManipulator.manipulateAsync(
       uri,
-      [{ resize: { width: 800 } }], // Resize to width 800, maintaining aspect ratio
-      { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG } // Compress and convert to JPEG
+      [{ resize: { width: 800 } }], 
+      { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
     );
     return manipResult.uri;
   };
@@ -45,8 +43,7 @@ const CameraScreen = () => {
           base64: true,
           quality: 1,
         });
-  
-        // Check if photo is defined and has uri and base64 properties
+ 
         if (photo && photo.uri && photo.base64) {
           const resizedImageUri = await resizeImageUri(photo.uri);
           setSelectedImage(resizedImageUri);
@@ -82,27 +79,25 @@ const CameraScreen = () => {
 
     if (!result.canceled && result.assets && result.assets.length > 0) {
       const uri = result.assets[0].uri;
-      const resizedImageUri = await resizeImageUri(uri);
-      setSelectedImage(resizedImageUri);
-      processImage(resizedImageUri);
+      setSelectedImage(uri);
+      processImage(uri);
     }
   };
 
   const processImage = async (uri: string) => {
     try {
-      setLoading(true); // Start loading indicator
+      setLoading(true);
       const base64Image = await getBase64(uri);
-      const base64ImageData = base64Image.split(',')[1]; // Remove the data URL prefix
+      const base64ImageData = base64Image.split(',')[1];
 
       const response = await axios.post('http://3.26.45.118/process-frame', {  
         frame : base64ImageData,
       });
 
       const { result } = response.data;
-      setBusResult(result); // Update state with the result from FastAPI
+      setBusResult(result);
 
       if (result !== 'Bus not found') {
-        // Use Expo Speech to play the result as audio
         Speech.speak(result, {
           onDone: () => {
             console.log('Speech finished');
@@ -116,7 +111,7 @@ const CameraScreen = () => {
     } catch (error) {
       console.error('Error processing image:', error);
     } finally {
-      setLoading(false); // Stop loading indicator
+      setLoading(false);
     }
   };
 
@@ -141,6 +136,9 @@ const CameraScreen = () => {
             facing={facing}
             ref={cameraRef}
           />
+          <TouchableOpacity style={styles.resetButton} onPress={resetScreen}>
+            <Text style={styles.text}>Reset</Text>
+          </TouchableOpacity>
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.button} onPress={takePicture}>
               <Text style={styles.text}>Capture Image</Text>
